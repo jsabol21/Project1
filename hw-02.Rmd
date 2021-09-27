@@ -1,0 +1,101 @@
+---
+title: "HW 02 - Airbnb listings in Edinburgh"
+author: "Jordan Sabol"
+date: "9/15/2021"
+output: html_document
+---
+
+## Load packages and data
+
+```{r load-packages, message = FALSE}
+library(tidyverse)
+library(dsbox)
+library(ggridges)
+```
+
+## Exercises
+
+### Exercise 1
+
+``` {r numrow}
+nrow(edibnb)
+````
+
+### Exercise 2
+
+View(edibnb)
+
+### Exercise 3
+
+
+```{r prices-neighbourhoods}
+  ggplot(data= edibnb, mapping = aes(x=price)) +
+    geom_histogram(binwidth= 75) +
+    facet_wrap(~ neighbourhood) +
+    labs(title="Airbnb Prices by Neighbourhood",
+         x="Price",
+         y="Frequency")
+
+```
+
+### Exercise 4
+
+
+```{r top-5-median}
+  edibnb %>% 
+    group_by(neighbourhood)%>%
+      summarise(Median=as.numeric(median(price, na.rm=TRUE)))%>%
+        arrange(desc(Median))%>%
+        slice(1:5)
+  
+    
+      
+      
+    
+  
+```
+
+```{r top-5-median-plot}
+
+  edibnb%>%
+    filter(neighbourhood %in% c("New Town", "Old Town", "West End", 
+                                "Stockbridge", "Bruntsfield"))
+    ggplot(data= edibnb, mapping=aes(x=price, y=neighbourhood))+
+      geom_density_ridges(alpha=0.5,
+                          color="red"
+                          )
+
+```
+
+```{r top-5-median-summary-stats}
+  edibnb %>%
+    filter(neighbourhood %in% c("New Town", "Old Town", "West End", 
+                                "Stockbridge", "Bruntsfield")) %>%
+    group_by(neighbourhood) %>%
+    summarise(Min= min(price, na.rm=TRUE), 
+              Mean= mean(price,  na.rm=TRUE), 
+              Median= median(price, na.rm = TRUE),
+              StdDev= sd(price, na.rm = TRUE),
+              IQR= IQR(price, na.rm= TRUE),
+              Max= max(price, na.rm=TRUE))
+    
+```
+
+Based on the visualization & summary statistics, the distribution of the data (listing prices in those 5 neighborhoods) has a right skew.
+
+### Exercise 5
+
+The visualization shows the frequency of the review scores rating by neighborhood. As seen in
+the graphs, most ratings fall in the 90+ range.
+
+```{r review-scores-rating}
+
+ggplot(data= edibnb, aes(x = review_scores_rating, fill = neighbourhood)) +
+  geom_histogram(binwidth = 20) +
+    labs(
+      x = "Review Scores Rating",
+      y = "Frequency",
+      title = "Review Scores By Neighborhood") +
+    facet_wrap(~ neighbourhood, nrow = 4)
+
+```
